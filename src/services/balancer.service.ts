@@ -46,6 +46,39 @@ class BalancerService {
         this.ring.remove(nodeId);
     }
 
+    /**
+     * Bonus: toggle the node status
+     */
+    toggleNodeStatus(nodeId: string, isActive: boolean): void {
+        const node = this.nodes.find(n => n.id === nodeId);
+        if(!node) return;
+
+        node.isActive = isActive;
+
+        if(isActive) {
+            this.ring.add(nodeId);
+        }
+        else {
+            this.ring.remove(nodeId);
+        }
+    }
+
+    getHealthSummary() {
+        const activeNodes = this.nodes.filter(n => n.isActive).map(n => n.id);
+        const inactiveNodes = this.nodes.filter(n => !n.isActive).map(n => n.id);
+
+        return {
+            status: activeNodes.length > 0 ? 'HEALTHY' : 'DEGRADED',
+            totalNodes: this.nodes.length,
+            activeCount: activeNodes.length,
+            inactiveCount: inactiveNodes.length,
+            details: {
+                activeNodes,
+                inactiveNodes
+            }
+        };
+    }
+
     getNodes() {
         return this.nodes;
     }

@@ -51,4 +51,41 @@ export class BalancerController {
             message: `Node ${nodeId} added successfully`
         });
     }
+
+    /**
+     * Application current status
+     * GET /api/health
+     */
+
+    getAppHealth = async(req: Request, res: Response): Promise<void> => {
+        const summary = balancerService.getHealthSummary();
+
+        res.status(200).json({
+            app: 'Load Balancer API',
+            timestamp: new Date().toISOString(),
+            ...summary
+        });
+    }
+
+    /**
+     * Toggle Node health
+     * POST /api/nodes/status
+     */
+
+    toggleNodeHealth = async(req: Request, res: Response): Promise<void> => {
+        const { nodeId, isActive } = req.body;
+
+        if(!nodeId || typeof isActive !== 'boolean') {
+            res.status(400).json({
+                error: 'nodeId and isActive are required'
+            });
+            return;
+        }
+
+        balancerService.toggleNodeStatus(nodeId, isActive);
+        res.status(200).json({
+            message: `Node ${nodeId} is now ${isActive ? 'active': 'inactive'}`
+        });
+
+    }
 }
