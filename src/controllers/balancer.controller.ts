@@ -69,7 +69,7 @@ export class BalancerController {
 
     /**
      * Toggle Node health
-     * POST /api/nodes/status
+     * PATCH /api/nodes/status
      */
 
     toggleNodeHealth = async(req: Request, res: Response): Promise<void> => {
@@ -87,5 +87,45 @@ export class BalancerController {
             message: `Node ${nodeId} is now ${isActive ? 'active': 'inactive'}`
         });
 
+    }
+
+    /**
+     * Update Node weight
+     * PATCH /api/nodes/weight
+     */
+
+    updateWeight = async(req: Request, res: Response): Promise<void> => {
+        const { nodeId, weight } = req.body;
+
+        if(!nodeId || typeof weight !== 'number' || weight < 1) {
+            res.status(400).json({
+                error: 'nodeId and a positive weight are required'
+            });
+            return;
+        }
+
+        balancerService.updateNodeWeight(nodeId, weight);
+        res.status(200).json({
+            message: `Weight for ${nodeId} updated to ${weight}`,
+            nodes: balancerService.getNodes()
+        });
+    }
+
+    /**
+     * Test persistence
+     * GET /api/route
+     */
+
+    routeSpecificeIp = async(req: Request, res: Response): Promise<void> => {
+        const { ip } = req.query;
+
+        if(!ip || typeof ip != 'string') {
+            res.status(400).json({
+                error: 'A valid IP query parameter is required'
+            });
+            return;
+        }
+        const result = balancerService.routeSingleRequest(ip);
+        res.status(200).json(result);
     }
 }

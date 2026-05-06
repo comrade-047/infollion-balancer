@@ -63,6 +63,41 @@ class BalancerService {
         }
     }
 
+    /**
+     * Bonus : Weighted routing
+     * Updates a node's weight and refreshes it's position on ring
+     */
+
+    updateNodeWeight(nodeId: string, weight: number): void {
+        const node = this.nodes.find(n => n.id === nodeId);
+        if(!node) return;
+
+        node.weight = weight;
+
+        if(node.isActive) {
+            this.ring.remove(nodeId);
+            
+            (this.ring as any).add({ [nodeId]: weight})
+        }
+
+        console.log(`Weight Update: ${nodeId} now has weight ${weight}`);
+    }
+
+    /**
+     * To verify the persistence of an IP to node
+     */
+
+    routeSingleRequest(ip: string): RouteLog {
+        const selectedNodeId = this.ring.get(ip);
+        identifyNode(ip, selectedNodeId);
+
+        return {
+            ip,
+            node: selectedNodeId,
+            timestamp: new Date().toISOString()
+        }
+    }
+
     getHealthSummary() {
         const activeNodes = this.nodes.filter(n => n.isActive).map(n => n.id);
         const inactiveNodes = this.nodes.filter(n => !n.isActive).map(n => n.id);
