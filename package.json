@@ -4,23 +4,24 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node dist/server.js",
-    "dev": "nodemon src/server.js",
-    "build": "tsc"
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "dotenv": "^17.4.2",
     "express": "^5.2.1",
-    "hashring": "^3.2.0"
+    "hashring": "^3.2.0",
+    "tsx": "^4.21.0"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
+    "@types/hashring": "^3.2.5",
     "@types/node": "^25.6.0",
-    "nodemon": "^3.1.14",
-    "ts-node": "^10.9.2",
     "typescript": "^6.0.3"
   }
 }
